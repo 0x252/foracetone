@@ -61,7 +61,9 @@ void convertSHA512ToSum(unsigned char hash[SHA512_DIGEST_LENGTH], char outputBuf
 https://github.com/yggdrasil-network/yggdrasil-go/blob/c3f8db699138a08278017634d3ec0057db2b253c/src/crypto/crypto.go#L85
 getNodeID
 -> https://github.com/yggdrasil-network/yggdrasil-go/blob/1fbab17b376bb8f4ee7026dded7461276681056f/src/address/address.go#L52
-
+<Mercury>   EncryptionPublicKey: 6ae6ed2c9554ea2252df8ec5f510cd1beb60f6ef05d94f90bdbbb5061440bb75 => is our key
+<Mercury> is our ipv6
+<Mercury> GuruRandomAscension_, зачем
 */
 char * convertSHA512ToIPv6(unsigned char h[SHA512_DIGEST_LENGTH]){
 		char hash[128];
