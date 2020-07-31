@@ -5,7 +5,6 @@
 #include<sys/socket.h>
 #include <sys/types.h> 
 
-
 #define KEYSIZE 32
 typedef struct {
 	uint8_t PublicKey[KEYSIZE];
@@ -64,6 +63,61 @@ getNodeID
 <Mercury>   EncryptionPublicKey: 6ae6ed2c9554ea2252df8ec5f510cd1beb60f6ef05d94f90bdbbb5061440bb75 => is our key
 <Mercury> is our ipv6
 <Mercury> GuruRandomAscension_, зачем
+*/
+
+
+/*
+// BoxPubKey is a NaCl-like "box" public key (curve25519+xsalsa20+poly1305).
+
+type BoxPubKey [BoxPubKeyLen]byte
+
+//info: https://github.com/yggdrasil-network/yggdrasil-go/blob/master/src/crypto/crypto.go#L185
+//https://github.com/golang/crypto/blob/master/nacl/box/box.go#L59
+//LOL REALLY?
+//XSALSA20?!
+ORIGINAL CODE:
+// AddrForNodeID takes a *NodeID as an argument and returns an *Address.
+// This address begins with the contents of GetPrefix(), with the last bit set to 0 to indicate an address.
+// The following 8 bits are set to the number of leading 1 bits in the NodeID.
+// The NodeID, excluding the leading 1 bits and the first leading 0 bit, is truncated to the appropriate length and makes up the remainder of the address.
+func AddrForNodeID(nid *crypto.NodeID) *Address {
+	// 128 bit address
+	// Begins with prefix
+	// Next bit is a 0
+	// Next 7 bits, interpreted as a uint, are # of leading 1s in the NodeID
+	// Leading 1s and first leading 0 of the NodeID are truncated off
+	// The rest is appended to the IPv6 address (truncated to 128 bits total)
+	var addr Address
+	var temp []byte
+	done := false
+	ones := byte(0)
+	bits := byte(0)
+	nBits := 0
+	for idx := 0; idx < 8*len(nid); idx++ {
+		bit := (nid[idx/8] & (0x80 >> byte(idx%8))) >> byte(7-(idx%8))
+		if !done && bit != 0 {
+			ones++
+			continue
+		}
+		if !done && bit == 0 {
+			done = true
+			continue // FIXME? this assumes that ones <= 127, probably only worth changing by using a variable length uint64, but that would require changes to the addressing scheme, and I'm not sure ones > 127 is realistic
+		}
+		bits = (bits << 1) | bit
+		nBits++
+		if nBits == 8 {
+			nBits = 0
+			temp = append(temp, bits)
+		}
+	}
+	prefix := GetPrefix()
+	copy(addr[:], prefix[:])
+	addr[len(prefix)] = ones
+	copy(addr[len(prefix)+1:], temp)
+	return &addr
+}
+
+
 */
 char * convertSHA512ToIPv6(unsigned char h[SHA512_DIGEST_LENGTH]){
 		char hash[128];
