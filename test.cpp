@@ -1,6 +1,5 @@
 #include<openssl/evp.h>
 #include<openssl/sha.h>
-#include<iostream> // not need ... if delete *miner* / change std::cout to another;
 #include<string.h>
 #include<arpa/inet.h>
 #include<sys/socket.h>
@@ -12,6 +11,7 @@ typedef struct {
 	uint8_t PublicKey[KEYSIZE];
 	uint8_t PrivateKey[KEYSIZE];
 }BoxKeys;
+
 BoxKeys getKeyPair(void){
 	size_t lenpub = KEYSIZE;
 	size_t lenpriv = KEYSIZE;
@@ -44,7 +44,7 @@ void getSHA512(void* data, unsigned char * hash){
 <Mercury>  return (*NodeID)(&h)
 <Mercury> }
 https://github.com/yggdrasil-network/yggdrasil-go/blob/78b5f88e4bb734d0dd6a138ff08d34ca39dcaea3/contrib/ansible/genkeys.go#L94
-https://github.com/yggdrasil-network/yggdrasil-go/blob/master/src/address/address.go#L52
+	https://github.com/yggdrasil-network/yggdrasil-go/blob/master/src/address/address.go#L52
 https://github.com/yggdrasil-network/yggdrasil-go/blob/1fbab17b376bb8f4ee7026dded7461276681056f/src/tuntap/tun.go#L159
 
 */
@@ -56,7 +56,13 @@ void convertSHA512ToSum(unsigned char hash[SHA512_DIGEST_LENGTH], char outputBuf
     }
 }
 
-//правильно ли?
+//правильно ли? I think is not coorect but from -> 
+/*
+https://github.com/yggdrasil-network/yggdrasil-go/blob/c3f8db699138a08278017634d3ec0057db2b253c/src/crypto/crypto.go#L85
+getNodeID
+-> https://github.com/yggdrasil-network/yggdrasil-go/blob/1fbab17b376bb8f4ee7026dded7461276681056f/src/address/address.go#L52
+
+*/
 char * convertSHA512ToIPv6(unsigned char h[SHA512_DIGEST_LENGTH]){
 		char hash[128];
 		convertSHA512ToSum(h, hash);
@@ -104,36 +110,32 @@ int miner(void)
 
 
 		auto myKeys = getKeyPair();
-		std::cout << "Public:  ";
+		puts("Public: ");
 		for(int i = 0; i < 32; ++i)
 		{
-			std::cout <<std::hex << (int)myKeys.PublicKey[i];
+        		printf("%02x", myKeys.PublicKey[i]);// two byte 
 		}
-		std::cout << std::endl;
-		std::cout << "Private: ";
+		puts("\nPrivate: ");
 		for(int i = 0; i < 32; ++i)
 		{
-			std::cout << std::hex << (int)myKeys.PrivateKey[i];
+        		printf("%02x", myKeys.PrivateKey[i]);// two byte 
 		}
-		std::cout << std::endl;
+		puts("");
 
 // sha512 --------------------------------
-		std::cout << std::endl;
-		std::cout << "SHA512: ";
-
+		puts("SHA512:");
 		unsigned char hash[SHA512_DIGEST_LENGTH];
 		getSHA512(myKeys.PublicKey, hash);
 		for(int i = 0; i < SHA512_DIGEST_LENGTH; i++)
 		{
-			std::cout << std::hex << (int)hash[i];
+        		printf("%02x", hash[i]);// two byte 
 		}
-		std::cout << std::endl;
-		std::cout << "IPv6: " ;
+		puts("");
+		puts("IPv6:");
 		auto ipv6=convertSHA512ToIPv6(hash);
-		std::cout <<  ipv6;
-		std::cout<< std::endl;
+		printf("%s\n", ipv6);
 		free(ipv6);
-		std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;	
+		puts("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 	}
 }
 
